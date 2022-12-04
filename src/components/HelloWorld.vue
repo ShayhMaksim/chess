@@ -16,7 +16,7 @@
 
 <script>
 import {boardWithChess, board, drawImage} from "../board.js"
-import {convertKey} from "../chess.js"
+import {convertKey, King} from "../chess.js"
 export default {
   name: 'HelloWorld',
   data() {
@@ -27,23 +27,41 @@ export default {
       clicker: false,
       container: null,
       futureStep: null,
+      kings: [boardWithChess[0][4], boardWithChess[7][4]]
     }
   }, 
   methods:{
     change: function (i, j) {
         if (this.clicker) {
             if ((i !== this.container[0] || j !== this.container[1]) && this.futureStep.has(convertKey(i, j))) {
+                
                 if (this.chessOnStart[this.container[0]][this.container[1]].start) {
                     this.chessOnStart[this.container[0]][this.container[1]].start = false;
                 }
-                this.chessOnStart[i][j] = this.chessOnStart[this.container[0]][this.container[1]];
-                this.chessOnStart[this.container[0]][this.container[1]] = null;
+
+                if (this.futureStep.get(convertKey(i, j)) === 's') {
+                    if (this.container[1] === 7) {
+                        this.chessOnStart[i][j + 1] = this.chessOnStart[this.container[0]][this.container[1]];
+                        this.chessOnStart[i][j + 2] = this.chessOnStart[i][j];
+                        this.chessOnStart[i][j] = null;
+                        this.chessOnStart[this.container[0]][this.container[1]] = null;
+                    }
+
+                    if (this.container[1] === 0) {
+                        this.chessOnStart[i][j - 1] = this.chessOnStart[this.container[0]][this.container[1]];
+                        this.chessOnStart[i][j - 2] = this.chessOnStart[i][j];
+                        this.chessOnStart[i][j] = null;
+                        this.chessOnStart[this.container[0]][this.container[1]] = null;
+                    }
+                } else {
+                    this.chessOnStart[i][j] = this.chessOnStart[this.container[0]][this.container[1]];
+                    this.chessOnStart[this.container[0]][this.container[1]] = null;
+                }
             }
             this.clicker = false;
             this.container = null;
             this.chessImages = drawImage(this.chessOnStart);
-            this.futureStep = null;
-            
+            this.futureStep = null;  
         } else {
             if (this.chessOnStart[i][j] !== null) {
                 this.clicker = true;
@@ -51,12 +69,23 @@ export default {
                 this.futureStep = this.chessOnStart[i][j].step(i, j, this.chessOnStart)
             }
         }
+        this.checkAndMate() 
     },
     selectBlockColor: function(i, j, defualt) {
+        if (this.chessOnStart[i][j] instanceof King) {
+            if (this.chessOnStart[i][j].check === 1) {
+                return "grid-item check"
+            } 
+            if (this.chessOnStart[i][j].check === 2) {
+                return "grid-item check_and_mate"
+            }
+        }
+
         let res = undefined;
         if (this.futureStep) {
             res = this.futureStep.get(convertKey(i, j))
         }
+
         if (this.container !== null && this.container[0] === i && this.container[1] === j) {
             return "grid-item step"
         } else if (res !== undefined) {
@@ -64,6 +93,8 @@ export default {
                 return "grid-item attack"
             } else if (res === "g") {
                 return "grid-item next"
+            } else if (res === "s") {
+                return "grid-item swap"
             }
         } else {
             if (defualt === 'w') {
@@ -73,6 +104,29 @@ export default {
             } 
         }
     },
+    checkAndMate: function() {
+        this.kings.forEach((value) => {
+            value.check = 0;
+        })
+
+        for (let i = 0; i < 8; ++i) {
+            for (let j = 0; j < 8; ++j) {
+                if (this.chessOnStart[i][j] !== null) {
+                    const futureStep = this.chessOnStart[i][j].step(i, j, this.chessOnStart)
+                    if (futureStep) {
+                        futureStep.forEach((key, value) => {
+                            let res = value.split("_");
+                            if (this.chessOnStart[Number(res[0])][Number(res[1])] instanceof King) {
+                                if (key === "a") { 
+                                    this.chessOnStart[Number(res[0])][Number(res[1])].check += 1;
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+        }
+    }
   }
 }
 </script>
@@ -121,6 +175,30 @@ export default {
 
 .next {
     background-color: palegreen;
+    border-color: black; 	
+    border-width: 15px;
+    border-radius: 15px;
+    border: 2px solid black;
+}
+
+.swap {
+    background-color: yellowgreen;
+    border-color: black; 	
+    border-width: 15px;
+    border-radius: 15px;
+    border: 2px solid black;
+}
+
+.check {
+    background-color: orange;
+    border-color: black; 	
+    border-width: 15px;
+    border-radius: 15px;
+    border: 2px solid black;
+}
+
+.check_and_mate {
+    background-color: brown;
     border-color: black; 	
     border-width: 15px;
     border-radius: 15px;

@@ -1,26 +1,26 @@
 import { Rook, Knight, Bishop, King, Queen, Pawn } from "./chess.js";
 
 export function initializer() {
-  let choise = Math.floor(Math.random())
+  let choise = Math.floor(Math.random() * 2) ;
 
   if (choise === 0) {
-    return [[new Rook("r2"), new Knight("h2"), new Bishop("b2"), new King("k2"), new Queen("q2"), new Bishop("b2"), new Knight("h2"), new Rook("r2")],
-            [new Pawn("p2", 0),new Pawn("p2", 0),new Pawn("p2", 0),new Pawn("p2", 0), new Pawn("p2", 0), new Pawn("p2", 0), new Pawn("p2", 0),new Pawn("p2", 0)],
+    return [[new Rook("r2", 0), new Knight("h2"), new Bishop("b2"), new Queen("q2"), new King("k2", 0), new Bishop("b2"), new Knight("h2"), new Rook("r2", 0)],
+            [new Pawn("p2", 0),new Pawn("p2", 0),new Pawn("p2", 0),new Pawn("p2", 0), new Pawn("p2", 0), new Pawn("p2", 0), new Pawn("p2", 0), new Pawn("p2", 0)],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [new Pawn("p", 1), new Pawn("p", 1), new Pawn("p", 1), new Pawn("p", 1), new Pawn("p", 1), new Pawn("p", 1), new Pawn("p", 1), new Pawn("p", 1)],
-            [new Rook("r"), new Knight("h"), new Bishop("b"), new King("k"), new Queen("q"), new Bishop("b"), new Knight("h"), new Rook("r")]];
+            [new Rook("r", 1), new Knight("h"), new Bishop("b"), new Queen("q"), new King("k", 1), new Bishop("b"), new Knight("h"), new Rook("r", 1)]];
   } else {
-    return [[new Rook("r"), new Knight("h"), new Bishop("b"), new King("k"), new Queen("q"), new Bishop("b"), new Knight("h"), new Rook("r")],
+    return [[new Rook("r", 0), new Knight("h"), new Bishop("b"), new Queen("q"), new King("k", 0), new Bishop("b"), new Knight("h"), new Rook("r", 0)],
             [new Pawn("p", 0),new Pawn("p", 0),new Pawn("p", 0), new Pawn("p", 0), new Pawn("p", 0), new Pawn("p", 0), new Pawn("p", 0),new Pawn("p", 0)],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null],
             [new Pawn("p2", 1), new Pawn("p2", 1), new Pawn("p2", 1), new Pawn("p2", 1), new Pawn("p2", 1), new Pawn("p2", 1), new Pawn("p2", 1), new Pawn("p2", 1)],
-            [new Rook("r2"), new Knight("h2"), new Bishop("b2"), new King("k2"), new Queen("q2"), new Bishop("b2"), new Knight("h2"), new Rook("r2")]];
+            [new Rook("r2", 1), new Knight("h2"), new Bishop("b2"), new Queen("q2"), new King("k2", 1), new Bishop("b2"), new Knight("h2"), new Rook("r2", 1)]];
   }
 }
 
