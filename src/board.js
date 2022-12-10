@@ -79,3 +79,32 @@ export function drawImage(chessOnStart) {
   }
   return res
 }
+
+export function checkToSwap(role, choose) {
+  if (choose == "white") {
+      switch(role) {
+          case "h":
+              return new Knight("h")
+          case "q":
+              return new Queen("q")
+      }
+  } else {
+      switch(role) {
+          case "h":
+              return new Knight("h2")
+          case "q":
+              return new Queen("q2")
+      }
+  }
+}
+
+export function swapPawn(i, j, chessOnStart) {
+  if ((i == 7 && chessOnStart[i][j].position == 0) || (i == 0 && chessOnStart[i][j].position == 1)) {
+      if (chessOnStart[i][j].name.length == 2) {
+          return "black"
+      } else {
+          return "white"
+      }
+  }
+  return null
+}

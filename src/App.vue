@@ -1,15 +1,15 @@
 <template>
-  <HelloWorld/>
+  <ChessBoard/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import ChessBoard from './components/ChessBoard.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    ChessBoard
+}
 }
 </script>
 

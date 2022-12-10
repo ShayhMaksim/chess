@@ -1,21 +1,53 @@
 <template>
 <div id="Board">
-  <div class="grid-container">
-      <template v-for='(row, i) in boardOnStart' :key="i + 1">
-          <template v-for='(pixel, j) in row' :key="j + 1">
-                <div :class="selectBlockColor(i, j, pixel)" @click="change(i, j)">
-                    <template v-if="chessImages[i][j] !== null">
-                        <img :src="chessImages[i][j]">
+    <div class="main-conainer">
+        <div class="choose">
+            <template v-if="changedPawn !== null">
+                <ol style="list-style-type:none;">
+                    <li>
+                        <div class="grid-item" @click="setNewRole('q')">
+                            <template v-if="changedPawn['color'] === 'white'">
+                                <img src="img/white/queen.png">
+                            </template>
+                            <template v-else>
+                                <img src="img/black/queen.png">
+                            </template>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="grid-item" @click="setNewRole('h')">
+                            <template v-if="changedPawn['color'] === 'white'">
+                                <img src="img/white/knight.png">
+                            </template>
+                            <template v-else>
+                                <img src="img/black/knight.png">
+                            </template>
+                        </div>
+                    </li>
+                </ol>
+            </template>
+        </div>
+        <div class="board">
+            <div class="grid-container">
+                <template v-for='(row, i) in boardOnStart' :key="i + 1">
+                    <template v-for='(pixel, j) in row' :key="j + 1">
+                            <div :class="selectBlockColor(i, j, pixel)" @click="change(i, j)">
+                                <template v-if="chessImages[i][j] !== null">
+                                    <img :src="chessImages[i][j]">
+                                </template>
+                            </div>
                     </template>
-                </div>
-          </template>
-      </template>
-  </div>
+                </template>
+            </div>
+        </div>
+            <div class="time">
+        </div>
+    </div>
 </div>
 </template>
 
 <script>
-import {boardWithChess, board, drawImage} from "../board.js"
+import {boardWithChess, board, drawImage, swapPawn, checkToSwap} from "../board.js"
 import {convertKey, King} from "../chess.js"
 export default {
   name: 'HelloWorld',
@@ -27,6 +59,8 @@ export default {
       clicker: false,
       container: null,
       futureStep: null,
+      changedPawn: null,
+      newRole: null,
       kings: [boardWithChess[0][4], boardWithChess[7][4]]
     }
   }, 
@@ -56,6 +90,13 @@ export default {
                 } else {
                     this.chessOnStart[i][j] = this.chessOnStart[this.container[0]][this.container[1]];
                     this.chessOnStart[this.container[0]][this.container[1]] = null;
+                    let color = swapPawn(i, j, this.chessOnStart)
+                    if (color) {
+                        this.changedPawn = {
+                            "pos" : [i, j],
+                            "color" : color,
+                        }
+                    }
                 }
             }
             this.clicker = false;
@@ -76,7 +117,7 @@ export default {
             if (this.chessOnStart[i][j].check === 1) {
                 return "grid-item check"
             } 
-            if (this.chessOnStart[i][j].check === 2) {
+            if (this.chessOnStart[i][j].check > 1) {
                 return "grid-item check_and_mate"
             }
         }
@@ -126,16 +167,33 @@ export default {
                 }
             }
         }
-    }
-  }
+    },
+    setNewRole(role) {
+        let pos = this.changedPawn["pos"];
+        let color = this.changedPawn["color"];
+        this.chessOnStart[pos[0]][pos[1]] = checkToSwap(role, color);
+        this.chessImages = drawImage(this.chessOnStart);
+        this.changedPawn = null;
+    },
+  },
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.grid-container {
+
+.main-conainer {
     border: solid 2px #000;
     display: grid;
+    grid-template-areas: 
+    "choose board time";
+    grid-template-columns: 1/7 5/7 1/7;
+    justify-content: space-around;
+}
+
+.grid-container {
+    display: grid;
+    border: solid 2px #000;
     grid-template-columns: repeat(8, 6em);
     grid-template-rows: repeat(8, 6em);
     grid-auto-rows: minmax(100px, auto);
@@ -145,12 +203,28 @@ export default {
 
 .grid-item {
     box-sizing: border-box;
-    text-align:center;
+    text-align: center;
     font-size: 1.1em;
     padding: 1.1em;
 }
 
-.grid-container img {
+.choose {
+    grid-area: choose;
+    background: gold;
+    width: 300px;
+}
+
+.board {
+    grid-area: board;
+}
+
+.time {
+    grid-area: time;
+    background: gold;
+    width: 300px;
+}
+
+img {
     width: 50px; /* you can use % */
     height: 50px;
 }
